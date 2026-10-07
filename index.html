@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercices - Gestion du temps et assertivité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101010; --surface:#191919; --surface2:#212121; --line:#2E2E2E;
+    --ink:#F4F4F4; --muted:#9A9A9A; --accent:#E25667; --ok:#4FBF87; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);
+       font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  body{padding:24px 16px 80px;line-height:1.5}
+  .wrap{max-width:880px;margin:0 auto}
+  .brand{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-size:clamp(1.6rem,5.4vw,2.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+  h2{font-size:.95rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:30px 0 12px}
+  h3{font-size:1.05rem;font-weight:700;margin:26px 0 10px}
+  .lede{color:var(--muted);max-width:62ch}
+  p+p{margin-top:10px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .btn{appearance:none;border:0;border-radius:999px;background:var(--accent);color:#0C0C0C;
+       font-family:inherit;font-size:1rem;font-weight:700;padding:14px 26px;cursor:pointer;transition:.15s}
+  .btn:hover{filter:brightness(1.12)}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .screen{display:none}
+  .screen.on{display:block}
+  .top{position:sticky;top:0;z-index:20;background:rgba(16,16,16,.93);backdrop-filter:blur(8px);
+       margin:-24px -16px 18px;padding:12px 16px 10px;border-bottom:1px solid var(--line)}
+  .meta{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:8px;gap:10px}
+  .track{height:4px;background:var(--surface2);border-radius:999px;overflow:hidden}
+  .fill{height:100%;background:var(--accent);width:0;transition:width .2s}
+  .qnum{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .q{font-size:clamp(1.1rem,3.6vw,1.4rem);font-weight:500;margin:8px 0 20px;line-height:1.35}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;
+       background:var(--surface);border:1px solid var(--line);border-radius:12px;
+       color:var(--ink);font-family:inherit;font-size:.98rem;padding:14px 16px;cursor:pointer;transition:.12s}
+  .opt:hover{border-color:#4A4A4A}
+  .opt[aria-pressed="true"]{border-color:var(--accent);background:#1B1718}
+  .opt .k{flex:0 0 26px;height:26px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);
+       display:grid;place-items:center;font-size:.76rem;font-weight:700;color:var(--muted)}
+  .opt[aria-pressed="true"] .k{background:var(--accent);border-color:var(--accent);color:#0C0C0C}
+  .nav{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+  .verdict{border-left:3px solid var(--accent);padding-left:18px;margin:18px 0 26px}
+  .score{display:flex;align-items:baseline;gap:10px;margin:16px 0 6px}
+  .score .n{font-size:clamp(2.6rem,11vw,4rem);font-weight:700;line-height:1;letter-spacing:-.03em;
+       font-variant-numeric:tabular-nums}
+  .score .d{color:var(--muted)}
+  .bars{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+  .brow{display:grid;grid-template-columns:1fr;gap:6px;background:var(--surface);border:1px solid var(--line);
+       border-radius:12px;padding:13px 15px}
+  .brow.hot{border-color:var(--accent);background:#1B1718}
+  .brow .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .brow .nm{font-weight:700}
+  .brow .vl{font-variant-numeric:tabular-nums;font-weight:700;color:var(--muted)}
+  .brow.hot .vl{color:var(--accent)}
+  .brow .g{height:6px;background:var(--surface2);border-radius:999px;overflow:hidden}
+  .brow .g i{display:block;height:100%;background:#4A4A4A}
+  .brow.hot .g i{background:var(--accent)}
+  .brow .cm{font-size:.86rem;color:var(--muted)}
+  .det{border-top:1px solid var(--line);padding:13px 0;display:grid;
+       grid-template-columns:34px 1fr;gap:12px;align-items:start}
+  .det .ix{font-size:.78rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+  .det .tx{min-width:0}
+  .det .tx b{display:block;font-weight:500;margin-bottom:4px}
+  .det .tx span{color:var(--muted);font-size:.88rem}
+  .det.ko .ix{color:var(--accent)}
+  .tag{display:inline-block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+       padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .tag.a{border-color:var(--accent);color:var(--accent)}
+  .tag.o{border-color:var(--ok);color:var(--ok)}
+  .chk{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);cursor:pointer}
+  .chk input{appearance:none;flex:0 0 20px;height:20px;margin-top:2px;border:1px solid var(--line);
+       border-radius:5px;background:var(--surface2);cursor:pointer}
+  .chk input:checked{background:var(--accent);border-color:var(--accent)}
+  .chk span{font-size:.94rem}
+  .note{margin-top:26px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padding-top:16px}
+  table.t{width:100%;border-collapse:collapse;font-size:.92rem}
+  table.t th,table.t td{border:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+  table.t th{background:var(--surface2);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  input.f,select.f,textarea.f{font-family:inherit;font-size:.95rem;color:var(--ink);background:var(--surface2);
+       border:1px solid var(--line);border-radius:9px;padding:10px 12px;width:100%}
+  input.f:focus,select.f:focus,textarea.f:focus{outline:0;border-color:var(--accent)}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.78rem;
+       display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  @media print{ body{background:#fff;color:#000} .btn,.top{display:none} }
+
+  .ex{--c:var(--cd);display:grid;grid-template-columns:44px 1fr 24px;gap:14px;align-items:center;
+      background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--c);
+      border-radius:12px;padding:16px;margin-bottom:11px;text-decoration:none;color:var(--ink);transition:.14s}
+  .ex:hover{border-color:var(--c);transform:translateX(2px)}
+  .ex .no{font-size:1.1rem;font-weight:700;color:var(--c);font-variant-numeric:tabular-nums}
+  .ex .bd{min-width:0;display:block}
+  .ex .bd b{display:block;font-size:1.05rem;margin-bottom:2px}
+  .ex .bd i{display:block;font-style:normal;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--c);font-weight:700;margin-bottom:5px}
+  .ex .bd span{display:block;color:var(--muted);font-size:.88rem}
+  .ex .ar{color:var(--muted);font-size:1.2rem;text-align:right}
+  :root[data-theme="light"] .ex{--c:var(--cl)}
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .ex{--c:var(--cl)} }
+</style>
+<style>
+/* 23ms-theme */
+:root{
+    --on-accent:#0C0C0C; --accent:#E25667;
+    --soft:#1B1718; --soft:color-mix(in srgb, #E25667 12%, #191919);
+}
+:root[data-theme="light"]{
+    --bg:#FAFAF7; --surface:#FFFFFF; --surface2:#F2F2ED; --line:#DFDFD8;
+    --ink:#16161A; --muted:#5F5F5A; --ok:#2F8F62; --on-accent:#FFFFFF;
+    --accent:#C8384B; --accent-dim:#F7ECEE;
+    --soft:#F4F1EE; --soft:color-mix(in srgb, #C8384B 10%, #FFFFFF);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#FAFAF7; --surface:#FFFFFF; --surface2:#F2F2ED; --line:#DFDFD8;
+    --ink:#16161A; --muted:#5F5F5A; --ok:#2F8F62; --on-accent:#FFFFFF;
+    --accent:#C8384B; --accent-dim:#F7ECEE;
+    --soft:#F4F1EE; --soft:color-mix(in srgb, #C8384B 10%, #FFFFFF);
+}
+}
+.btn{color:var(--on-accent)}
+.opt:hover{border-color:var(--muted)}
+.opt[aria-pressed="true"]{background:var(--soft)}
+.opt[aria-pressed="true"] .k{color:var(--on-accent)}
+.brow.hot{background:var(--soft)}
+.brow .g i{background:var(--muted)}
+.vf button[aria-pressed="true"]{color:var(--on-accent)}
+.pil[aria-pressed="true"]{color:var(--on-accent)}
+ol.list li.done{background:var(--soft)}
+.band.me{background:var(--soft)}
+.sheet{background:#FFFFFF;border:1px solid var(--line)}
+.top,.bar{background:var(--bg)}
+.theme{position:fixed;right:14px;bottom:14px;z-index:60;appearance:none;cursor:pointer;
+  font-family:inherit;font-size:.78rem;font-weight:700;padding:9px 15px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  box-shadow:0 4px 16px rgba(0,0,0,.22)}
+.theme:hover{border-color:var(--accent);color:var(--accent)}
+@media print{
+  :root{ --bg:#FFFFFF; --surface:#FFFFFF; --surface2:#F4F4F0; --line:#CCCCC6;
+         --ink:#000000; --muted:#434341; --ok:#2F8F62; --on-accent:#FFFFFF;
+         --accent:#C8384B; --soft:#F3F3EF; }
+  html,body{background:#FFFFFF;color:#000000}
+  .theme,.nav,.top,.bar{display:none}
+  .card,.brow,.grp,.det,.ex{break-inside:avoid}
+}
+</style>
+<script>(function(){try{var t=localStorage.getItem("23ms-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);}}catch(e){}})();</script>
+</head>
+<body>
+<button class="theme" id="theme" type="button" aria-label="Changer l'affichage">Clair</button>
+
+<div class="wrap">
+
+  <section>
+    <span class="brand">23 MindSet</span>
+    <h1>Les exercices du livret, en version numérique</h1>
+    <p class="lede">Optimiser son organisation professionnelle et la gestion de son temps. Chaque exercice se joue sur téléphone, la correction s'affiche à la fin, et rien n'est envoyé nulle part.</p>
+
+    <h2>Les exercices à faire sur votre téléphone</h2>
+    <a class="ex" href="autodiagnostic-organisation.html" style="--cd:#E25667;--cl:#C8384B">
+      <span class="no">01</span>
+      <span class="bd"><b>Mon organisation au quotidien</b><i>25 situations · 8 min</i><span>Score sur 75 et profil d'organisateur, avec le détail des 25 situations.</span></span>
+      <span class="ar">→</span>
+    </a>
+    <a class="ex" href="test-efficacite.html" style="--cd:#F0A33C;--cl:#A8641A">
+      <span class="no">02</span>
+      <span class="bd"><b>Test d'efficacité</b><i>23 consignes · 2 min chrono</i><span>Combien de consignes inutiles exécutées, et la correction consigne par consigne.</span></span>
+      <span class="ar">→</span>
+    </a>
+    <a class="ex" href="diablotins.html" style="--cd:#8E7BF5;--cl:#6248C9">
+      <span class="no">03</span>
+      <span class="bd"><b>Quels sont vos diablotins favoris ?</b><i>40 questions · 8 min</i><span>Vos dix voleurs de temps notés sur 16, classés, avec un geste à essayer pour les trois premiers.</span></span>
+      <span class="ar">→</span>
+    </a>
+    <a class="ex" href="to-do-list.html" style="--cd:#4FBF87;--cl:#2F8F62">
+      <span class="no">04</span>
+      <span class="bd"><b>Ma to-do list</b><i>exercice ouvert · 10 min</i><span>Vos tâches, leurs priorités, leurs durées, le total, et cinq critères d'auto-évaluation.</span></span>
+      <span class="ar">→</span>
+    </a>
+    <a class="ex" href="plan-journee.html" style="--cd:#45A8D8;--cl:#2A7CA6">
+      <span class="no">06</span>
+      <span class="bd"><b>Plan de journée sous la dictée</b><i>20 situations · 20 min</i><span>Votre plan reconstitué par case, et un corrigé indicatif sur les vingt situations.</span></span>
+      <span class="ar">→</span>
+    </a>
+    <a class="ex" href="assertivite.html" style="--cd:#E8C84A;--cl:#8A6E00">
+      <span class="no">07</span>
+      <span class="bd"><b>Autodiagnostic d'assertivité</b><i>60 affirmations · 10 min</i><span>Fuite, attaque, manipulation, assertivité : quatre scores sur 15 et l'attitude dominante.</span></span>
+      <span class="ar">→</span>
+    </a>
+
+    <h2>Les trames à remplir en salle</h2>
+    <div class="card">
+      <p><b>05 · Tableau des priorités</b> et la version projetée de la <b>to-do list</b> et du <b>plan de journée</b>
+      sont fournies à part, en PowerPoint et en PDF, avec leur page de corrigé indicatif.</p>
+      <p style="color:var(--muted)">Elles se remplissent à la main ou au tableau, en sous-groupes.</p>
+    </div>
+
+    <h2>Comment ça marche</h2>
+    <div class="det"><span class="ix">1</span><span class="tx"><b>La correction arrive à la fin</b><span>Jamais question par question : sinon on devine au lieu de répondre.</span></span></div>
+    <div class="det"><span class="ix">2</span><span class="tx"><b>Rien ne sort de votre téléphone</b><span>Aucune donnée envoyée, aucun compte à créer. Fermer la page efface tout.</span></span></div>
+    <div class="det"><span class="ix">3</span><span class="tx"><b>Vous pouvez garder votre résultat</b><span>Le bouton d'impression de chaque résultat permet de l'enregistrer en PDF.</span></span></div>
+    <div class="det"><span class="ix">4</span><span class="tx"><b>Le livret papier reste valable</b><span>Ces pages reprennent les mêmes consignes, les mêmes items et les mêmes corrigés. Les deux versions se valent.</span></span></div>
+
+    <footer><span>D'après le livret d'exercices Excellens Formation - mise en forme numérique 23 MindSet - Fares ATBA</span><span>Version numérique du livret d'exercices</span></footer>
+  </section>
+
+</div>
+<script>
+/* page d'accueil */
+</script>
+<script>
+(function(){
+  "use strict";
+  var r = document.documentElement, b = document.getElementById("theme");
+  if(!b) return;
+  function cur(){
+    var a = r.getAttribute("data-theme");
+    if(a === "light" || a === "dark") return a;
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches)
+      ? "light" : "dark";
+  }
+  function peindre(){
+    var c = cur();
+    b.textContent = (c === "dark") ? "\u2600 Clair" : "\u263E Sombre";
+    b.setAttribute("aria-label", (c === "dark")
+      ? "Passer \u00e0 l'affichage clair" : "Passer \u00e0 l'affichage sombre");
+  }
+  b.addEventListener("click", function(){
+    var n = (cur() === "dark") ? "light" : "dark";
+    r.setAttribute("data-theme", n);
+    try { localStorage.setItem("23ms-theme", n); } catch(e){}
+    peindre();
+  });
+  if(window.matchMedia){
+    try {
+      window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function(){
+        if(!r.getAttribute("data-theme")) peindre();
+      });
+    } catch(e){}
+  }
+  peindre();
+})();
+</script>
+</body>
+</html>
